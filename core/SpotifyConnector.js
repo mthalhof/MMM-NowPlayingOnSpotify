@@ -2,6 +2,7 @@
 
 const request = require('request-promise-native');
 const moment = require('moment');
+var replaceall = require("replaceall");
 
 const tokenRefreshEndpoint = 'https://accounts.spotify.com/api/token';
 const apiEndpoint = 'https://api.spotify.com/v1/me/player';
@@ -35,6 +36,34 @@ module.exports = class SpotifyConnector {
         });
     }
   }
+  
+  playThis(payload) {
+	let url = payload.url;  
+	let uri = replaceall("/", ":", url.replace("https://open.spotify.com", "spotify"));
+
+	
+    if (moment().isBefore(this.tokenExpiresAt)) {
+	  
+	  let currentDeviceID = payload.deviceName;
+	  return this.PlaySpotify(currentDeviceID, uri);
+	
+    } else {
+      return this.refreshAccessToken()
+        .then((response) => {
+          console.log('Refreshed access token because it has expired. Expired at: %s now is: %s',
+            this.tokenExpiresAt.format('HH:mm:ss'), moment().format('HH:mm:ss'));
+
+          this.credentials.accessToken = response.access_token;
+          this.tokenExpiresAt = moment().add(response.expires_in, 'seconds');
+		  let currentDeviceID = payload.deviceName;
+		  return this.PlaySpotify(currentDeviceID, uri);
+        })
+        .catch((err) => {
+          console.error('Error while refreshing:');
+          console.error(err);
+        });
+    }
+  }
 
   getSpotifyData() {
     let options = {
@@ -44,6 +73,36 @@ module.exports = class SpotifyConnector {
     };
 
     return request.get(options);
+  }
+  
+  
+  PlaySpotify(currentDeviceID, uri) {
+    
+	if(uri.indexOf('track')> -1){
+		let options = {
+			url: apiEndpoint + '/play?device_id=' + currentDeviceID,   
+			body: {
+              "uris": [uri],
+              "position_ms": 0
+            },
+			headers: {'Authorization': 'Bearer ' + this.credentials.accessToken},
+			json: true
+		};
+		return request.put(options);
+	} else {
+		let options = {
+			url: apiEndpoint + '/play?device_id=' + currentDeviceID,   
+			body: {
+              "context_uri": uri,
+              "position_ms": 0
+            },
+			headers: {'Authorization': 'Bearer ' + this.credentials.accessToken},
+			json: true
+		};
+		return request.put(options);	
+	}
+
+    
   }
 
   refreshAccessToken() {

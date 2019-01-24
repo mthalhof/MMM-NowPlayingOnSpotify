@@ -10,7 +10,7 @@ Module.register('MMM-NowPlayingOnSpotify', {
 
     // user definable
     updatesEvery: 1,          // How often should the table be updated in s?
-    showCoverArt: true       // Do you want the cover art to be displayed?
+    showCoverArt: true,       // Do you want the cover art to be displayed?
   },
 
 
@@ -47,6 +47,42 @@ Module.register('MMM-NowPlayingOnSpotify', {
       'moment.js'
     ];
   },
+  
+  
+  notificationReceived: function(notification, payload, sender) {
+	//  console.log(this.name + " received a module notification: " + notification + " from sender: " + sender.name);
+ 
+  switch(notification) {
+      case 'PLAY_SPOTIFY':
+		payload["deviceName"] = this.config.deviceName;
+		this.sendSocketNotification('PLAY_SPOTIFY', payload);
+        break;
+		
+      case 'PLAY_NEXT':
+        //todo
+       break;
+      case 'PLAY_PREVIOUS':
+        //todo
+        break;
+      case 'PAUSE':
+        //todo
+        break;
+      case 'SHUFFLE':
+        //todo
+        break;
+      case 'REPEAT':
+        //todo
+        break;
+      case 'SEEK':
+        //todo
+        break;
+      case 'SET_VOLUME':
+        //todo
+        break;
+    }
+  
+  },
+
 
   socketNotificationReceived: function (notification, payload) {
     switch (notification) {

@@ -9,8 +9,7 @@ module.exports = NodeHelper.create({
   start: function () {
     this.connector = undefined;
   },
-
-
+  
   socketNotificationReceived: function (notification, payload) {
     switch (notification) {
       case 'CONNECT_TO_SPOTIFY':
@@ -20,6 +19,41 @@ module.exports = NodeHelper.create({
 
       case 'UPDATE_CURRENT_SONG':
         this.retrieveCurrentSong();
+        break;
+		    
+      case 'PLAY_SPOTIFY':
+		this.connector.playThis(payload).catch((error) => {
+			console.error('Can’t start playing. Reason: ');
+			console.error(error);
+		});
+        break;
+		    
+      case 'PLAY_NEXT':
+        //todo
+       break;
+		    
+      case 'PLAY_PREVIOUS':
+        //todo
+        break;
+		    
+      case 'PAUSE':
+        //todo
+        break;
+		    
+      case 'SHUFFLE':
+        //todo
+        break;
+		    
+      case 'REPEAT':
+        //todo
+        break;
+		    
+      case 'SEEK':
+        //todo
+        break;
+		    
+      case 'SET_VOLUME':
+        //todo
         break;
     }
   },
