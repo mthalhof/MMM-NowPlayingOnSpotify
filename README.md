@@ -81,6 +81,7 @@ There is not very much to configure but here are the options:
 | `clientSecret` | <p>A string describing the `clientSecret` of your Spotify app.</p><p>**Type:** `string` **REQUIRED**<br>**Example:** `"87978346..."`<br>**Default Value:** none</p><p>**Note:** The easiest way to get that value is by copying the code snippet from step 3 in the [authorisation app](#step-2-–-create-and-authorise-a-spotify-app).</p> |
 | `accessToken` | <p>A string describing the `accessToken ` of your Spotify app.</p><p>**Type:** `string` **REQUIRED**<br>**Example:** `"WaIO1987..."`<br>**Default Value:** none</p><p>**Note:** The easiest way to get that value is by copying the code snippet from step 3 in the [authorisation app](#step-2-–-create-and-authorise-a-spotify-app).</p> |
 | `refreshToken` | <p>A string describing the `refreshToken ` of your Spotify app.</p><p>**Type:** `string` **REQUIRED**<br>**Example:** `"HIuLH798..."`<br>**Default Value:** none</p><p>**Note:** The easiest way to get that value is by copying the code snippet from step 3 in the [authorisation app](#step-2-–-create-and-authorise-a-spotify-app).</p> |
+| `deviceName` | <p>Name of the spotify device you  want to control. e.g. the raspotify name <br> If not defined the current playing device will be controlled </p><p>**Type:** `string` **OPTIONAL**<br>**Example:** `myMirror`<br>**Default Value:** `null`</p> |
 
 Here is an example for an entry in `config.js`
 
@@ -94,7 +95,8 @@ Here is an example for an entry in `config.js`
         clientID: "<YOUR_CLIENT_ID>",
         clientSecret: "<YOUR_CLIENT_SECRET>",
         accessToken: "<YOUR_ACCESS_TOKEN>",
-        refreshToken: "<YOUR_REFRESH_TOKEN>"
+        refreshToken: "<YOUR_REFRESH_TOKEN>",
+        deviceName: "<DEVICENAME>"
     }
 }
 ```
