@@ -11,6 +11,7 @@ Module.register('MMM-NowPlayingOnSpotify', {
     // user definable
     updatesEvery: 1,          // How often should the table be updated in s?
     showCoverArt: true,       // Do you want the cover art to be displayed?
+	deviceName: null,		  // Set to Spotify device name to controll specific device.
   },
 
 
