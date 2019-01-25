@@ -44,7 +44,7 @@ module.exports = class SpotifyConnector {
 	
     if (moment().isBefore(this.tokenExpiresAt)) {
 	  
-	  let currentDeviceID = payload.deviceName;
+	  let currentDeviceID = this.getDeviceID(payload.deviceName);
 	  return this.PlaySpotify(currentDeviceID, uri);
 	
     } else {
@@ -55,7 +55,7 @@ module.exports = class SpotifyConnector {
 
           this.credentials.accessToken = response.access_token;
           this.tokenExpiresAt = moment().add(response.expires_in, 'seconds');
-		  let currentDeviceID = payload.deviceName;
+		  let currentDeviceID = this.getDeviceID(payload.deviceName);
 		  return this.PlaySpotify(currentDeviceID, uri);
         })
         .catch((err) => {
@@ -80,22 +80,25 @@ module.exports = class SpotifyConnector {
     
 	if(uri.indexOf('track')> -1){
 		let options = {
-			url: apiEndpoint + '/play?device_id=' + currentDeviceID,   
+			url: apiEndpoint + '/play',    
 			body: {
               "uris": [uri],
               "position_ms": 0
             },
+			qs: {device_id: currentDeviceID},
 			headers: {'Authorization': 'Bearer ' + this.credentials.accessToken},
 			json: true
 		};
 		return request.put(options);
 	} else {
 		let options = {
-			url: apiEndpoint + '/play?device_id=' + currentDeviceID,   
+			//url: apiEndpoint + '/play?device_id=' + currentDeviceID, 
+			url: apiEndpoint + '/play', 			
 			body: {
               "context_uri": uri,
               "position_ms": 0
             },
+			qs: {device_id: currentDeviceID},
 			headers: {'Authorization': 'Bearer ' + this.credentials.accessToken},
 			json: true
 		};
@@ -104,6 +107,42 @@ module.exports = class SpotifyConnector {
 
     
   }
+  
+  getDeviceID(DeviceName) {
+	
+	if(DeviceName){
+		let options = {
+			url: apiEndpoint + '/devices',   
+			headers: {'Authorization': 'Bearer ' + this.credentials.accessToken},
+			json: true,
+			resolveWithFullResponse: true
+		};
+		
+		request.put(options).then(function (response) {
+			return response.some(item => item.name === DeviceName).id;
+		}).catch(function (err) {
+			return err;
+		})
+		
+		
+	} else {
+		let options = {
+			url: apiEndpoint,
+			headers: {'Authorization': 'Bearer ' + this.credentials.accessToken},
+			json: true,
+			resolveWithFullResponse: true
+		};
+		
+		request.put(options).then(function (response) {
+			return response.device.id;
+		}).catch(function (err) {
+			return err;
+		})
+	}
+
+    
+  }
+  
 
   refreshAccessToken() {
     let client_id = this.credentials.clientID;
