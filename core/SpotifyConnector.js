@@ -4,8 +4,8 @@ const request = require('request-promise-native');
 const moment = require('moment');
 var replaceall = require("replaceall");
 
-const tokenRefreshEndpoint = 'https://accounts.spotify.com/api/token';
-const apiEndpoint = 'https://api.spotify.com/v1/me/player';
+const tokenRefreshEndpoint = 'https:\/\/accounts.spotify.com/api/token';
+const apiEndpoint = 'https:\/\/api.spotify.com/v1/me/player';
 
 
 module.exports = class SpotifyConnector {
@@ -39,12 +39,12 @@ module.exports = class SpotifyConnector {
   
   playThis(payload) {
 	let url = payload.url;  
-	let uri = replaceall("/", ":", url.replace("https://open.spotify.com", "spotify"));
-
+	let uri = replaceall("/", ":", url.replace("https:\/\/open.spotify.com", "spotify"));
 	
     if (moment().isBefore(this.tokenExpiresAt)) {
 	  
 	  let currentDeviceID = this.getDeviceID(payload.deviceName);
+	  console.error("play on: "+currentDeviceID);
 	  return this.PlaySpotify(currentDeviceID, uri);
 	
     } else {
@@ -109,8 +109,7 @@ module.exports = class SpotifyConnector {
   }
   
   getDeviceID(DeviceName) {
-	
-	if(DeviceName){
+	if(DeviceName != null){
 		let options = {
 			url: apiEndpoint + '/devices',   
 			headers: {'Authorization': 'Bearer ' + this.credentials.accessToken},
@@ -118,9 +117,11 @@ module.exports = class SpotifyConnector {
 			resolveWithFullResponse: true
 		};
 		
-		request.put(options).then(function (response) {
-			return response.some(item => item.name === DeviceName).id;
+		request.get(options).then(function (response) {
+			console.error(JSON.stringify(response));
+			return response.devices.some(item => item.name === DeviceName).id;
 		}).catch(function (err) {
+			console.error(JSON.stringify(err));
 			return err;
 		})
 		
@@ -133,7 +134,7 @@ module.exports = class SpotifyConnector {
 			resolveWithFullResponse: true
 		};
 		
-		request.put(options).then(function (response) {
+		request.get(options).then(function (response) {
 			return response.device.id;
 		}).catch(function (err) {
 			return err;
